@@ -9,18 +9,15 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   plugins: [createPersistedState()],
   state: {
-    id: "",
-    user:""
+    id:"",
   },
   mutations: {
     id(state, payload) {
       state.id = payload;
     },
-    user(state, payload) {
-      state.user=payload
-    },
+    
     logout(state, payload) {
-      state.auth = payload
+      state.id = payload
     },
   },
   actions: {
@@ -32,19 +29,17 @@ export default new Vuex.Store({
           password: password,
         }
       );
-      const responseUser=await axios.get("http://127.0.0.1:8000/api/user/:user_id")
       commit("id", responseLogin.data.id);
-      commit("user",responseUser.data.data)
       router.replace("/home");
     },
     logout({ commit }) {
       axios
         .post("http://127.0.0.1:8000/api/logout", {
-          auth: this.state.auth,
+          auth: this.state.id,
         })
         .then((response) => {
           console.log(response);
-          commit("logout", response.data.auth);
+          commit("logout", response.data.id);
           router.replace("/")
         })
         .catch((error) => {

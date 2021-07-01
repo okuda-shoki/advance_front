@@ -8,15 +8,15 @@
             <div class="back_img">
               <img src="../img/back.png"  @click="$router.push('/home')">
             </div>
-            <h3 class="shop_name">{{shopname}}</h3>
+            <h3 class="shop_name">{{shop_d.shopname}}</h3>
           </div>
           <div class="shop_content">
-            <img :src="img" class="shop_img">
+            <img :src="shop_d.img" class="shop_img">
             <div class="shop_length flex">
-              <p>{{area_id}}</p>
-              <p class="shop_genre">{{genre_id}}</p>
+              <p>#{{shop_d.area.area}}</p>
+              <p class="shop_genre">#{{shop_d.genre.genre}}</p>
             </div>
-            <p class="shop_description">{{descrition}}</p>
+            <p class="shop_description">{{shop_d.description}}</p>
           </div>
         </div>
         <div class="right">
@@ -57,7 +57,7 @@
            </div>
           </div>
           <div class="reservation_content">
-            <p>Shop:<span>{{name}}</span></p>
+            <p>Shop:<span>{{shop_d.shopname}}</span></p>
             <p>Date:<span>{{date}}</span></p>
             <p>Time:<span>{{time}}</span></p>
             <p>Number:<span>{{number}}</span></p>
@@ -73,23 +73,33 @@
 
 <script>
 import LogoHeader from '../components/LogoHeader.vue'
+import axios from "axios";
 export default {
+  props:["id"],
   components:{
-    LogoHeader
+    LogoHeader,
   },
   data(){
     return{
+      shop_d:[],
+      name:"",
       date:"",
       time:"",
-      number:"",
-      name:"仙人",
-      shopname:"仙人",
-      img:"https://coachtech-matter.s3-ap-northeast-1.amazonaws.com/image/sushi.jpg",
-      area_id:"東京都",
-      genre_id:"寿司",
-      descrition:"料理長厳選の食材から作る寿司を用いたコースをぜひお楽しみください。食材・味・価格、お客様の満足度を徹底的に追及したお店です。特別な日のお食事、ビジネス接待まで気軽に使用することができます。"
+      number:""
     }
-  }
+  },
+  methods:{
+    detail(){
+      axios
+      .get("http://127.0.0.1:8000/api/shop/"+this.id)
+      .then((response)=>{
+        this.shop_d=response.data.item
+      });
+    },
+  },
+    created(){
+      this.detail();
+    }
 }
 </script>
 

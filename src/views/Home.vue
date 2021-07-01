@@ -171,6 +171,7 @@ select{
 .link_text{
   font-family: 'Playfair Display', serif,bold;
   font-size: 18px;
+  justify-content: center;
 }
 
 
