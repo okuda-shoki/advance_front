@@ -14,8 +14,8 @@
           path:'/detail/'+shop.id,
           params:{id:shop.id},
         })">詳しくみる</button>
-      <img src="../img/white_heart 2.png" v-if="show" alt="白ハート">
-      <img src="../img/red_heart 1.png" v-else @click="deleteadd" alt="赤ハート">
+      <img src="../img/white_heart 2.png" v-if="show" @click="postheart" alt="白ハート">
+      <img src="../img/red_heart 1.png" v-else @click="deleteheart" alt="赤ハート">
       </div>
      </div>
     </div>
@@ -26,21 +26,21 @@
 <script>
 import axios from "axios";
 export default {
-  props:["id"],
   data(){
     return{
+      props:["id"],
       shops:[],
       path:true,
       show:true
     }
   },
     methods:{
-      deleteadd(){
-        const result=this.shops.like.some((value)=>{
+      deleteheart(){
+        const result =this.shops.like.some((value)=>{
           return value.user_id==this.$store.state.id;
         });
         if(result){
-          this.shops.like.forEach((element)=>{
+          this.shops.like.forEach(element => {
             if(element.user_id==this.$store.state.id){
               axios({
                 method:"delete",
@@ -51,39 +51,53 @@ export default {
                 },
               }).then((response)=>{
                 console.log(response);
+                this.show=!this.show
                 this.$router.go({
                   path:this.$router.currentRoute.path,
                   force:true,
-                });
-              });
-            }else{
+                })
+              })
+            }
+          });
+        }
+      },
+       postheart(){
               axios
               .post("http://127.0.0.1:8000/api/like",{
                 shop_id:this.shops.id,
-                user_id:this.$store.state.id
+                user_id:this.$store.state.id,
               })
               .then((response)=>{
                 console.log(response);
+                this.show=!this.show
                 this.$router.go({
                   path:this.$router.currentRoute.path,
                   force:true,
-                });
-              });
-            }
-          })
-        }
+                })
+              })
       },
-      async getshops(){
-       await axios.get("http://127.0.0.1:8000/api/shop")
-        .then((res)=>{
-          this.shops=res.data.data
-         console.log(res)
+      async getshops() {
+      let data = [];
+      const shopall = await axios.get(
+        "http://127.0.0.1:8000/api/shop"
+      );
+      for (let i = 0; i < shopall.data.data.length; i++) {
+        await axios
+          .get(
+            "http://127.0.0.1:8000/api/shop/" +
+              shopall.data.data[i].id
+          )
+          .then((response)=>{
+            data.push(response.data.item)
           });
-        },
+          }
+      this.shops=data;
+      console.log(this.shops);
       },
+    },
     created(){
       this.getshops();
-    }
+  }
 }
 </script>
 
