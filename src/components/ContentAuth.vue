@@ -14,7 +14,7 @@
           path:'/detail/'+shop.id,
           params:{id:shop.id},
         })">詳しくみる</button>
-      <img src="../img/white_heart 2.png" v-if="show" @click="postheart" alt="白ハート">
+      <img src="../img/white_heart 2.png" v-if="show(shop)" @click="postheart(shop)" alt="白ハート">
       <img src="../img/red_heart 1.png" v-else @click="deleteheart" alt="赤ハート">
       </div>
      </div>
@@ -30,8 +30,8 @@ export default {
     return{
       props:["id"],
       shops:[],
+      likesData:[],
       path:true,
-      show:true
     }
   },
     methods:{
@@ -61,39 +61,39 @@ export default {
           });
         }
       },
-       postheart(){
+       postheart(shop){
               axios
               .post("http://127.0.0.1:8000/api/like",{
-                shop_id:this.shops.id,
+                shop_id:shop.id,
                 user_id:this.$store.state.id,
               })
               .then((response)=>{
-                console.log(response);
-                this.show=!this.show
-                this.$router.go({
-                  path:this.$router.currentRoute.path,
-                  force:true,
-                })
-              })
+                response.data.data=this.likesData;
+                console.log(this.likesData);
+              });
+      },
+      show(shop){
+        if(shop.id===this.likesData.shop_id){
+          return false
+        }else{
+          return true
+        }
       },
       async getshops() {
-      let data = [];
-      const shopall = await axios.get(
+        let data=[];
+        const shopsdata= await axios.get(
         "http://127.0.0.1:8000/api/shop"
       );
-      for (let i = 0; i < shopall.data.data.length; i++) {
+      for(let i=0;i<shopsdata.data.data.length;i++){
         await axios
-          .get(
-            "http://127.0.0.1:8000/api/shop/" +
-              shopall.data.data[i].id
-          )
-          .then((response)=>{
-            data.push(response.data.item)
-          });
-          }
-      this.shops=data;
-      console.log(this.shops);
-      },
+        .get("http://127.0.0.1:8000/api/shop/"+shopsdata.data.data[i].id)
+        .then((response)=>{
+          data.push(response.data.item)
+        });
+      }
+      this.shops=data
+      console.log(this.shops)
+      }
     },
     created(){
       this.getshops();

@@ -7,7 +7,7 @@
         <div class="reservation flex">
           <div class="reservation_small flex">
             <img src="../img/tokei8.png" class="tokei" alt="tokei">
-            <p>予約{{data.figure}}</p>
+            <p>予約{{data}}</p>
           </div>
           <img src="../img/batu.png" class="batu" alt="取り消し">
         </div>
@@ -24,33 +24,30 @@
 
 <script>
 import LogoHeader from '../components/LogoHeader.vue'
+import axios from "axios";
 export default {
   components:{
     LogoHeader
   },
   data(){
     return{
-      datas:[
-        {
-          figure:1,
-          name:"仙人",
-          date:"2011-11-15",
-          time:"15:00",
-          number:1
-        },
-         {
-          figure:2,
-          name:"仙人",
-          date:"2011-11-15",
-          time:"15:00",
-          number:1
-        }
-      ]
+      datas:[]
     }
+  },
+  methods:{
+    async getreservation(){
+      await axios.get("http://127.0.0.1:8000/api/user/1/reservation")
+      .then((response)=>{
+        response.data.item=this.datas
+        console.log(this.datas)
+      })
+    }
+  },
+  created(){
+    this.getreservation();
   }
 }
 </script>
-
 
 <style scoped>
 .back{

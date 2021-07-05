@@ -62,7 +62,7 @@
             <p>Time:<span>{{time}}</span></p>
             <p>Number:<span>{{number}}</span></p>
          </div>
-         <div class="reservation_com">
+         <div class="reservation_com" @click="shopreservation">
            <button>予約する</button>
          </div>
         </div>
@@ -96,6 +96,30 @@ export default {
         this.shop_d=response.data.item
       });
     },
+    shopreservation(){
+      axios
+      .post("http://127.0.0.1:8000/api/reservation",{
+        shop_id:this.id,
+        user_id:this.$store.state.id,
+        date:this.date,
+        time:this.time,
+        number:this.number
+      })
+      .then((response)=>{
+        console.log(response);
+        this.date="",
+        this.time="",
+        this.number=""
+        this.$router.go({
+              path: this.$router.currentRoute.path,
+              force: true,
+            });
+      })
+      .catch((error)=>{
+        console.log(error);
+        alert("正しく入力して下さい")
+      })
+    }
   },
     created(){
       this.detail();
